@@ -1,14 +1,21 @@
 server:
   port: 8089
-  address: 127.0.0.1
+  address: 0.0.0.0
 
 spring:
+   main:
+     allow-bean-definition-overriding: true
    application:
     name: soul-bootstrap
    redis:
-     host: localhost
-     password: 123456
-     port: 6379
+    password: foobaredbbexONE123
+    timeout: 300000ms
+    sentinel:
+          master: mymaster
+          nodes:
+              - 192.168.1.91:26379
+              - 192.168.1.92:26379
+              - 192.168.1.93:26379
    influxdb:
         url: http://localhost:8086
         username: test
@@ -24,7 +31,7 @@ spring:
         connectionTimeout : 2000
         serializer : KryoSerializer
 soul:
-    bufferSize: 2048
+    bufferSize: 4096
     timeVerify:
        timeDelay : 10
        enabled: false
