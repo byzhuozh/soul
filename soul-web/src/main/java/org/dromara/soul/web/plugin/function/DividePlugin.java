@@ -77,18 +77,15 @@ public class DividePlugin extends AbstractSoulPlugin {
     @Override
     protected Mono<Void> doExecute(final ServerWebExchange exchange, final SoulPluginChain chain, final SelectorZkDTO selector, final RuleZkDTO rule) {
         final RequestDTO requestDTO = exchange.getAttribute(Constants.REQUESTDTO);
-        if (Objects.isNull(requestDTO)) {
-            return chain.execute(exchange);
-        }
 
         final DivideRuleHandle ruleHandle = GSONUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle.class);
 
         if (StringUtils.isBlank(ruleHandle.getGroupKey())) {
-            ruleHandle.setGroupKey(requestDTO.getModule());
+            ruleHandle.setGroupKey(Objects.requireNonNull(requestDTO).getModule());
         }
 
         if (StringUtils.isBlank(ruleHandle.getCommandKey())) {
-            ruleHandle.setCommandKey(requestDTO.getMethod());
+            ruleHandle.setCommandKey(Objects.requireNonNull(requestDTO).getMethod());
         }
 
         final List<DivideUpstream> upstreamList =
