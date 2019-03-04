@@ -1,8 +1,14 @@
 server:
-  port: 8086
-  address: 127.0.0.1
+  port: 8888
+  address: 0.0.0.0
 
 spring:
+   thymeleaf:
+       cache: true
+       encoding: utf-8
+       enabled: true
+       prefix: classpath:/static/
+       suffix: .html
    datasource:
      url: jdbc:mysql://127.0.0.1:3306/soul?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=CONVERT_TO_NULL&failOverReadOnly=false&autoReconnect=true&useSSL=false&&serverTimezone=UTC
      username: root
