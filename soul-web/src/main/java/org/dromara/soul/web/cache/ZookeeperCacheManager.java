@@ -117,10 +117,10 @@ public class ZookeeperCacheManager implements CommandLineRunner, DisposableBean 
 
     @Override
     public void run(final String... args) {
-        loadWatcherPlugin();
-        loadWatcherSelector();
-        loadWatcherRule();
-        loadWatchAppAuth();
+        loadWatcherPlugin();   //加载并监听插件
+        loadWatcherSelector(); //加载并监听选择器
+        loadWatcherRule();  //加载并监听选择器对应的规则
+        loadWatchAppAuth(); //加载并监听权限认证
     }
 
     private void loadWatchAppAuth() {
@@ -167,11 +167,15 @@ public class ZookeeperCacheManager implements CommandLineRunner, DisposableBean 
     private void loadWatcherPlugin() {
         Arrays.stream(PluginEnum.values()).forEach(pluginEnum -> {
             String pluginPath = ZkPathConstants.buildPluginPath(pluginEnum.getName());
-            if (!zkClient.exists(pluginPath)) {
+
+            //对节点进行初始化
+         if (!zkClient.exists(pluginPath)) {
                 zkClient.createPersistent(pluginPath, true);
             }
             PluginZkDTO data = zkClient.readData(pluginPath);
             Optional.ofNullable(data).ifPresent(d -> PLUGIN_MAP.put(pluginEnum.getName(), data));
+
+            //对节点进行监听
             zkClient.subscribeDataChanges(pluginPath, new IZkDataListener() {
                 @Override
                 public void handleDataChange(final String dataPath, final Object data) {

@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author xiaoyu
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "org.dromara.soul")
 public class SoulBootstrapApplication {
 
     /**

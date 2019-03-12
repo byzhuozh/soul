@@ -215,36 +215,52 @@ public class PluginServiceImpl implements PluginService {
 
     /**
      * sync plugin.
+     * 插件数据同步
      *
      * @param pluginDO {@linkplain PluginDO}
      */
     private void syncPlugin(PluginDO pluginDO) {
+
+        //判断插件的节点路径
         String pluginPath = ZkPathConstants.buildPluginPath(pluginDO.getName());
         if (!zkClient.exists(pluginPath)) {
             zkClient.createPersistent(pluginPath, true);
         }
+
+        //对插件的节点路径赋值
         zkClient.writeData(pluginPath, new PluginZkDTO(pluginDO.getId(),
                 pluginDO.getName(), pluginDO.getEnabled()));
 
+        //查到该插件对应的全部选择器的 zk 节点路径
         List<String> selectorZKs = zkClient.getChildren(ZkPathConstants.buildSelectorParentPath(pluginDO.getName()));
+
+        //查出数据库中该插件对应的全部选择器，循环判断是否存在节点路径，并进行赋值
         selectorMapper.selectByQuery(new SelectorQuery(pluginDO.getId(), null)).forEach(selectorDO -> {
             if (CollectionUtils.isNotEmpty(selectorZKs)) {
-                selectorZKs.remove(selectorDO.getId());
+                selectorZKs.remove(selectorDO.getId());  //selectorZKs 剩下的则是需要删除的节点
             }
+
+            //选择器父路径校验是否存在   eg: /soul/selector/divide/xxxxx
             String selectorRealPath = ZkPathConstants.buildSelectorRealPath(pluginDO.getName(), selectorDO.getId());
             if (!zkClient.exists(selectorRealPath)) {
                 zkClient.createPersistent(selectorRealPath, true);
             }
+
+            //查出该选择器的附属条件，并对选择器节点路径赋值
             List<ConditionZkDTO> selectorConditionZkDTOs = selectorConditionMapper.selectByQuery(new SelectorConditionQuery(selectorDO.getId())).stream()
                     .map(selectorConditionDO -> new ConditionZkDTO(selectorConditionDO.getParamType(), selectorConditionDO.getOperator(),
                             selectorConditionDO.getParamName(), selectorConditionDO.getParamValue())).collect(Collectors.toList());
+
             zkClient.writeData(selectorRealPath, new SelectorZkDTO(selectorDO.getId(), selectorDO.getPluginId(), pluginDO.getName(),
                     selectorDO.getName(), selectorDO.getMatchMode(), selectorDO.getType(), selectorDO.getSort(), selectorDO.getEnabled(),
                     selectorDO.getLoged(), selectorDO.getContinued(), selectorDO.getHandle(), selectorConditionZkDTOs));
 
+            //查出该插件对应的全部选择器的对用的规则
             List<String> ruleZKs = zkClient.getChildren(ZkPathConstants.buildRuleParentPath(pluginDO.getName()));
+
             ruleMapper.selectByQuery(new RuleQuery(selectorDO.getId(), null)).forEach(ruleDO -> {
                 if (CollectionUtils.isNotEmpty(ruleZKs)) {
+                    //ruleZKs 剩下的则是需要删除的节点
                     ruleZKs.remove(selectorDO.getId() + ZkPathConstants.SELECTOR_JOIN_RULE + ruleDO.getId());
                 }
                 String ruleRealPath = ZkPathConstants.buildRulePath(pluginDO.getName(), selectorDO.getId(), ruleDO.getId());
@@ -258,11 +274,13 @@ public class PluginServiceImpl implements PluginService {
                         ruleDO.getMatchMode(), ruleDO.getSort(), ruleDO.getEnabled(), ruleDO.getLoged(), ruleDO.getHandle(), ruleConditionZkDTOs));
             });
 
+            //删除zk中多余的节点
             ruleZKs.forEach(ruleZK -> zkClient.delete(ZkPathConstants.buildRulePath(pluginDO.getName(), selectorDO.getId(), ruleZK)));
         });
 
         selectorZKs.forEach(selectorZK -> {
             zkClient.delete(ZkPathConstants.buildSelectorRealPath(pluginDO.getName(), selectorZK));
+
             String ruleParentPath = ZkPathConstants.buildRuleParentPath(pluginDO.getName());
             zkClient.getChildren(ruleParentPath).forEach(selectorRulePath -> {
                 if (selectorRulePath.split(ZkPathConstants.SELECTOR_JOIN_RULE)[0].equals(selectorZK)) {
