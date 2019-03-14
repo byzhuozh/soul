@@ -33,6 +33,7 @@ public class AndMatchStrategy extends AbstractMatchStrategy implements MatchStra
 
     @Override
     public Boolean match(final List<ConditionZkDTO> conditionZkDTOList, final ServerWebExchange exchange) {
+        //所有条件都要匹配
         return conditionZkDTOList
                 .stream()
                 .allMatch(condition -> ConditionJudge.judge(condition, buildRealData(condition, exchange)));

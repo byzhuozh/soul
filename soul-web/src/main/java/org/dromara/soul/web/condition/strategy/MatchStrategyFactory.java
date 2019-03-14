@@ -42,6 +42,8 @@ public class MatchStrategyFactory {
      *
      * @param strategy which is strategy
      * @return {@linkplain MatchStrategy}
+     *
+     * 根据选择器的 selector # match_mode 的匹配方式找到对应的匹配策略
      */
     public static MatchStrategy of(final Integer strategy) {
         return MATCH_STRATEGY_MAP.get(strategy);

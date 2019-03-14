@@ -52,6 +52,7 @@ abstract class AbstractMatchStrategy {
         } else if (Objects.equals(ParamTypeEnum.IP.getName(), condition.getParamType())) {
             realData = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();
         } else if (Objects.equals(ParamTypeEnum.HEADER.getName(), condition.getParamType())) {
+            //获取  http 的请求头信息
             final HttpHeaders headers = exchange.getRequest().getHeaders();
             final List<String> list = headers.get(condition.getParamName());
             if (CollectionUtils.isEmpty(list)) {
