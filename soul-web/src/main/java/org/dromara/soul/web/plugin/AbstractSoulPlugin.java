@@ -83,9 +83,13 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
         if (!(skip(exchange) || pluginZkDTO == null || !pluginZkDTO.getEnabled())) {
             //获取selector
             final List<SelectorZkDTO> selectors = zookeeperCacheManager.findSelectorByPluginName(named());
+
+            //如果没有对应的选择器，则返回 chain 去执行下一个插件
             if (CollectionUtils.isEmpty(selectors)) {
                 return chain.execute(exchange);
             }
+
+            //全流量/自定义流量  选择器匹配
             final SelectorZkDTO selectorZkDTO = selectors.stream()
                     .filter(selector -> selector.getEnabled() && filterSelector(selector, exchange))
                     .findFirst().orElse(null);
@@ -98,12 +102,14 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
                 LogUtils.info(LOGGER, named()
                         + " selector success selector name :{}", selectorZkDTO::getName);
             }
+
             final List<RuleZkDTO> rules =
                     zookeeperCacheManager.findRuleBySelectorId(selectorZkDTO.getId());
             if (CollectionUtils.isEmpty(rules)) {
                 return chain.execute(exchange);
             }
 
+            //匹配规则
             RuleZkDTO rule = filterRule(exchange, rules);
 
             final RequestDTO request = exchange.getAttribute(Constants.REQUESTDTO);
@@ -129,6 +135,8 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
                         + " rule is name :"
                         + rule.getName());
             }
+
+            //校验通过，进入插件执行匹配
             return doExecute(exchange, chain, selectorZkDTO, rule);
         }
         return chain.execute(exchange);
@@ -139,6 +147,8 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
             if (CollectionUtils.isEmpty(selector.getConditionZkDTOList())) {
                 return false;
             }
+
+            //策略模式 -- 根据匹配模式 code 找到对应的匹配方式
             return MatchStrategyFactory.of(selector.getMatchMode())
                     .match(selector.getConditionZkDTOList(), exchange);
         }
@@ -153,3 +163,4 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
                 .findFirst().orElse(null);
     }
 }
+
