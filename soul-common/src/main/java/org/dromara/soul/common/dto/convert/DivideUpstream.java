@@ -24,7 +24,7 @@ import lombok.ToString;
 import java.io.Serializable;
 
 /**
- * this is divide upstream.
+ * this is divide upstream.(对应的 divide 的选择器的 http 信息配置)
  *
  * @author xiaoyu(Myth).
  */

@@ -191,11 +191,12 @@ public class PluginServiceImpl implements PluginService {
             List<String> pluginZKs = zkClient.getChildren(ZkPathConstants.buildPluginParentPath());
             pluginDOs.forEach(pluginDO -> {
                 if (CollectionUtils.isNotEmpty(pluginZKs)) {
-                    pluginZKs.remove(pluginDO.getName());
+                    pluginZKs.remove(pluginDO.getName());  //去掉数据库中已存在，剩下的则是 zk 中无效的节点信息
                 }
                 syncPlugin(pluginDO);
             });
 
+            //无效的 zk 节点信息清除
             pluginZKs.forEach(pluginZK -> {
                 zkClient.delete(ZkPathConstants.buildPluginPath(pluginZK));
                 String selectorParentPath = ZkPathConstants.buildSelectorParentPath(pluginZK);

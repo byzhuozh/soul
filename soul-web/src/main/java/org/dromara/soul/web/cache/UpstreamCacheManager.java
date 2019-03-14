@@ -56,8 +56,10 @@ public class UpstreamCacheManager {
 
     private static final int MAX_THREAD = Runtime.getRuntime().availableProcessors() << 1;
 
+    //key-selectorId, value-List<DivideUpstream>[每个选择器可以对应有多个 http 信息配置]
     private static final Map<String, List<DivideUpstream>> UPSTREAM_MAP = Maps.newConcurrentMap();
 
+    //key -- value 同  UPSTREAM_MAP
     private static final Map<String, List<DivideUpstream>> SCHEDULED_MAP = Maps.newConcurrentMap();
 
     @Value("${soul.upstream.delayInit:30}")
@@ -99,9 +101,11 @@ public class UpstreamCacheManager {
                     SoulThreadFactory.create("save-upstream-task", false));
 
             for (int i = 0; i < MAX_THREAD; i++) {
+                //BLOCKING_QUEUE --> UPSTREAM_MAP、SCHEDULED_MAP
                 executorService.execute(new Worker());
             }
 
+            //UPSTREAM_MAP --> SCHEDULED_MAP
             new ScheduledThreadPoolExecutor(MAX_THREAD,
                     SoulThreadFactory.create("scheduled-upstream-task", false))
                     .scheduleWithFixedDelay(this::scheduled,

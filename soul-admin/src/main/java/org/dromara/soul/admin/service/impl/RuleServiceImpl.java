@@ -106,6 +106,8 @@ public class RuleServiceImpl implements RuleService {
                     ruleConditionMapper.updateSelective(ruleConditionDO);
                 }
             });
+
+            //将数据库中的已存在的规则条件和入参的规则条件进行比对，然后去掉失效的
             ruleConditions.stream().filter(ruleConditionDO -> ruleConditionDTOs.stream()
                     .filter(ruleConditionDTO -> StringUtils.isNoneEmpty(ruleConditionDTO.getId()))
                     .anyMatch(ruleConditionDTO -> !ruleConditionDO.getId().equals(ruleConditionDTO.getId())))
