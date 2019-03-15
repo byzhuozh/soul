@@ -32,6 +32,7 @@ import java.util.TreeMap;
 
 /**
  * hash algorithm impl.
+ * 对 ip 进行 hash
  *
  * @author xiaoyu(Myth)
  */
@@ -48,7 +49,10 @@ public class HashLoadBalance implements LoadBalance {
                 treeMap.put(addressHash, address);
             }
         }
+
         long hash = hash(String.valueOf(ip));
+
+        //找到当前大于等于 hash 值的有序 map
         SortedMap<Long, DivideUpstream> lastRing = treeMap.tailMap(hash);
         if (!lastRing.isEmpty()) {
             return lastRing.get(lastRing.firstKey());

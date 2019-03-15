@@ -26,6 +26,7 @@ import java.util.Random;
 
 /**
  * random algorithm impl.
+ * 默认的负载均衡模式(随机)
  *
  * @author xiaoyu(Myth)
  */

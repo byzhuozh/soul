@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 /**
  * RoundRobin  LoadBalance Impl.
  *
+ * 根据权重轮询
+ *
  * @author xiaoyu(Myth)
  */
 public class RoundRobinLoadBalance implements LoadBalance {
@@ -56,6 +58,7 @@ public class RoundRobinLoadBalance implements LoadBalance {
             // 累计最小权重
             minWeight = Math.min(minWeight, weight);
         }
+
         // 权重不一样
         if (maxWeight > 0 && minWeight < maxWeight) {
             AtomicPositiveInteger weightSequence = weightSequences.get(key);

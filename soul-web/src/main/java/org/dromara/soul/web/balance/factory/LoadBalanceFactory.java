@@ -33,6 +33,11 @@ import java.util.stream.StreamSupport;
  */
 public class LoadBalanceFactory {
 
+
+    /**
+     * 在ServiceLoader.load的时候，根据传入的接口类，遍历META-INF/services目录下的以该类命名的文件中的所有类，并实例化返回;
+     * 通过 spi 的引入机制，减少本地的硬编码
+     */
     private static final ServiceLoader<LoadBalance> SERVICE_LOADER =
             SpiLoadFactory.loadAll(LoadBalance.class);
 
