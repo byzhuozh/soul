@@ -96,6 +96,10 @@ public class HttpCommand extends HystrixObservableCommand<Void> {
         this.timeout = timeout;
     }
 
+    /**
+     * 执行业务逻辑
+     * @return
+     */
     @Override
     protected Observable<Void> construct() {
         return RxReactiveStreams.toObservable(doHttpInvoke());
@@ -112,10 +116,10 @@ public class HttpCommand extends HystrixObservableCommand<Void> {
                         httpHeaders.addAll(exchange.getRequest().getHeaders());
                         httpHeaders.remove(HttpHeaders.HOST);
                     })
-                    .exchange()
+                    .exchange()  //可以拿到响应结果 ClientResponse ，通过其获取响应的状态码和cookie 等，注意和 retrieve 区别
                     .doOnError(e -> LogUtils.error(LOGGER, e::getMessage))
                     .timeout(Duration.ofMillis(timeout))
-                    .flatMap(this::doNext);
+                    .flatMap(this::doNext);  // flatMap来将ClientResponse映射为 Mono/Flux
         } else if (requestDTO.getHttpMethod().equals(HttpMethodEnum.POST.getName())) {
             return WEB_CLIENT.post().uri(buildRealURL())
                     .headers(httpHeaders -> {
@@ -127,11 +131,15 @@ public class HttpCommand extends HystrixObservableCommand<Void> {
                     .exchange()
                     .doOnError(e -> LogUtils.error(LOGGER, e::getMessage))
                     .timeout(Duration.ofMillis(timeout))
-                    .flatMap(this::doNext);
+                    .flatMap(this::doNext);  // flatMap来将ClientResponse映射为 Mono/Flux
         }
         return Mono.empty();
     }
 
+    /**
+     * 重写 resumeWithFallback 实现服务降级
+     * @return
+     */
     @Override
     protected Observable<Void> resumeWithFallback() {
         return RxReactiveStreams.toObservable(doFallback());
@@ -150,6 +158,8 @@ public class HttpCommand extends HystrixObservableCommand<Void> {
         } else {
             exchange.getAttributes().put(Constants.CLIENT_RESPONSE_RESULT_TYPE, ResultEnum.ERROR.getName());
         }
+
+        //返回响应
         exchange.getAttributes().put(Constants.CLIENT_RESPONSE_ATTR, res);
         return chain.execute(exchange);
     }

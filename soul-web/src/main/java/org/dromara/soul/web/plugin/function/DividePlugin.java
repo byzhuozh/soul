@@ -78,6 +78,7 @@ public class DividePlugin extends AbstractSoulPlugin {
     protected Mono<Void> doExecute(final ServerWebExchange exchange, final SoulPluginChain chain, final SelectorZkDTO selector, final RuleZkDTO rule) {
         final RequestDTO requestDTO = exchange.getAttribute(Constants.REQUESTDTO);
 
+        //解析降级策略参数和负载策略的json
         final DivideRuleHandle ruleHandle = GSONUtils.getInstance().fromJson(rule.getHandle(), DivideRuleHandle.class);
 
         if (StringUtils.isBlank(ruleHandle.getGroupKey())) {
@@ -88,6 +89,7 @@ public class DividePlugin extends AbstractSoulPlugin {
             ruleHandle.setCommandKey(Objects.requireNonNull(requestDTO).getMethod());
         }
 
+        //从缓存中获取选择器中的 http 配置的 url信息
         final List<DivideUpstream> upstreamList =
                 upstreamCacheManager.findUpstreamListBySelectorId(selector.getId());
         if (CollectionUtils.isEmpty(upstreamList)) {
@@ -99,6 +101,8 @@ public class DividePlugin extends AbstractSoulPlugin {
         if (upstreamList.size() == 1) {
             divideUpstream = upstreamList.get(0);
         } else {
+
+            //根据规则的 http 负载策略，选择合适的 http - url 配置信息
             if (StringUtils.isNoneBlank(ruleHandle.getLoadBalance())) {
                 final LoadBalance loadBalance = LoadBalanceFactory.of(ruleHandle.getLoadBalance());
                 final String ip = Objects.requireNonNull(exchange.getRequest().getRemoteAddress()).getAddress().getHostAddress();
@@ -113,9 +117,9 @@ public class DividePlugin extends AbstractSoulPlugin {
 
         HttpCommand command = new HttpCommand(HystrixBuilder.build(ruleHandle), exchange, chain,
                 requestDTO, buildRealURL(divideUpstream), ruleHandle.getTimeout());
+
         return Mono.create((MonoSink<Object> s) -> {
-            Subscription sub = command.toObservable().subscribe(s::success,
-                    s::error, s::success);
+            Subscription sub = command.toObservable().subscribe(s::success, s::error, s::success);
             s.onCancel(sub::unsubscribe);
             if (command.isCircuitBreakerOpen()) {
                 LogUtils.error(LOGGER, () -> ruleHandle.getGroupKey() + "....http:circuitBreaker is Open.... !");

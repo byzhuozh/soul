@@ -34,11 +34,13 @@ public class DivideRuleHandle extends HystrixHandle implements Serializable {
     /**
      * loadBalance.
      * {@linkplain org.dromara.soul.common.enums.LoadBalanceEnum}
+     * 负载策略
      */
     private String loadBalance;
 
     /**
      * http retry.
+     * 重试次数
      */
     private int retry;
 

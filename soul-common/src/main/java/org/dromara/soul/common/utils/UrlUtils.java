@@ -69,6 +69,7 @@ public class UrlUtils {
 
     private static boolean isHostConnector(final String host, final int port) {
         try (Socket socket = new Socket()) {
+            //判断地址是否可连接
             socket.connect(new InetSocketAddress(host, port));
         } catch (IOException e) {
             return false;
