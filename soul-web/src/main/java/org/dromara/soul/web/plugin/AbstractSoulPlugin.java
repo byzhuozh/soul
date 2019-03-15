@@ -90,6 +90,7 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
             }
 
             //全流量/自定义流量  选择器匹配
+            //全流量 --> 则不校验选择器的条件 filterSelector
             final SelectorZkDTO selectorZkDTO = selectors.stream()
                     .filter(selector -> selector.getEnabled() && filterSelector(selector, exchange))
                     .findFirst().orElse(null);
@@ -143,6 +144,8 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
     }
 
     private Boolean filterSelector(final SelectorZkDTO selector, final ServerWebExchange exchange) {
+
+        //自定义流量模式-则校验对应选择器的匹配条件
         if (selector.getType() == SelectorTypeEnum.CUSTOM_FLOW.getCode()) {
             if (CollectionUtils.isEmpty(selector.getConditionZkDTOList())) {
                 return false;
@@ -152,6 +155,8 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
             return MatchStrategyFactory.of(selector.getMatchMode())
                     .match(selector.getConditionZkDTOList(), exchange);
         }
+
+        //全流量模式 - 则忽略选择器的匹配条件
         return true;
     }
 
@@ -163,4 +168,3 @@ public abstract class AbstractSoulPlugin implements SoulPlugin {
                 .findFirst().orElse(null);
     }
 }
-
