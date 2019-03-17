@@ -58,6 +58,7 @@ public class RedisConfiguration {
     @Bean
     @SuppressWarnings("unchecked")
     public RedisScript redisScript() {
+        //读取 lua 脚本，并初始化 bean
         DefaultRedisScript redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("/META-INF/scripts/request_rate_limiter.lua")));
         redisScript.setResultType(List.class);
