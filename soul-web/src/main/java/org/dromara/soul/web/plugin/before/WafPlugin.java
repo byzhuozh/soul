@@ -45,6 +45,8 @@ import java.util.Objects;
 /**
  * use waf plugin we can control some access.
  *
+ * 拦截非法请求，或者异常请求，并且给与相关的拒绝策略
+ *
  * @author xiaoyu(Myth)
  */
 public class WafPlugin extends AbstractSoulPlugin {
@@ -84,6 +86,8 @@ public class WafPlugin extends AbstractSoulPlugin {
             LogUtils.error(LOGGER, "waf handler can not config：{}", () -> handle);
             return chain.execute(exchange);
         }
+
+
         // if reject
         if (WafEnum.REJECT.getName().equals(wafHandle.getPermission())) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
