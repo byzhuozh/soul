@@ -35,6 +35,8 @@ public final class SoulHandlerMapping extends AbstractHandlerMapping {
     /**
      * Instantiates a new Soul handler mapping.
      *
+     * 实例化 soul web 处理器
+     *
      * @param soulWebHandler the soul web handler
      */
     public SoulHandlerMapping(final SoulWebHandler soulWebHandler) {
@@ -42,11 +44,24 @@ public final class SoulHandlerMapping extends AbstractHandlerMapping {
         setOrder(1);
     }
 
+
+    /**
+     * 匹配到一个handler，就返回Mono
+     * @param exchange
+     * @return
+     */
     @Override
     protected Mono<?> getHandlerInternal(final ServerWebExchange exchange) {
         return Mono.just(soulWebHandler);
     }
 
+
+    /**
+     * 检索给定handle的CORS配置
+     * @param handler
+     * @param exchange
+     * @return
+     */
     @Override
     protected CorsConfiguration getCorsConfiguration(final Object handler, final ServerWebExchange exchange) {
         return super.getCorsConfiguration(handler, exchange);
