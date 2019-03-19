@@ -19,6 +19,7 @@
 package org.dromara.soul.bootstrap.influxdb.service;
 
 import org.dromara.soul.bootstrap.BaseTest;
+import org.dromara.soul.web.influxdb.entity.MonitorDO;
 import org.dromara.soul.web.influxdb.service.InfluxDbService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +39,15 @@ public class InfluxDbServiceTest extends BaseTest {
     @Test
     public void writeData() {
 
-        for (int i = 0; i < 100; i++) {
-
-        }
+        MonitorDO monitorDO = new MonitorDO();
+        monitorDO.setModule("order");
+        monitorDO.setMethod("say");
+        monitorDO.setIp("192.168.0.1");
+        monitorDO.setRpcType("http");
+        monitorDO.setHost("localhost");
+        monitorDO.setResultType("Integer");
+        monitorDO.setCount(1);
+       influxDbService.writeData(monitorDO);
 
     }
 }
