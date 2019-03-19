@@ -20,10 +20,7 @@ package org.dromara.soul.test.http.controller;
 
 
 import org.dromara.soul.test.http.dto.UserDTO;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * TestController.
@@ -46,5 +43,10 @@ public class HttpTestController {
         return "helloWorld!";
     }
 
+
+    @GetMapping("/say")
+    public String say(String userName) {
+        return "hello! " + userName;
+    }
 
 }
