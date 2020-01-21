@@ -25,14 +25,12 @@ public class UserDTO implements Serializable {
      *
      * @param userId the user id
      */
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
     @Override
     public String toString() {
-        return "UserDTO{" +
-                "userId='" + userId + '\'' +
-                '}';
+        return "UserDTO{" + "userId='" + userId + '\'' + '}';
     }
 }

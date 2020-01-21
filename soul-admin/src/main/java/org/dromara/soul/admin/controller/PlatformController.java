@@ -18,15 +18,14 @@
 
 package org.dromara.soul.admin.controller;
 
+import org.dromara.soul.admin.result.SoulAdminResult;
 import org.dromara.soul.admin.service.DashboardUserService;
 import org.dromara.soul.admin.service.EnumService;
 import org.dromara.soul.admin.vo.DashboardUserVO;
-import org.dromara.soul.common.result.SoulResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 /**
  * this is platform controller.
@@ -52,25 +51,21 @@ public class PlatformController {
      *
      * @param userName user name
      * @param password user password
-     * @return {@linkplain Mono}
+     * @return {@linkplain SoulAdminResult}
      */
     @GetMapping("/login")
-    public Mono<SoulResult> loginDashboardUser(final String userName, final String password) {
-        try {
-            DashboardUserVO dashboardUserVO = dashboardUserService.findByQuery(userName, password);
-            return Mono.create(soulResult -> soulResult.success(SoulResult.success("login dashboard user success", dashboardUserVO)));
-        } catch (Exception e) {
-            return Mono.create(soulResult -> soulResult.success(SoulResult.error("login dashboard user exception")));
-        }
+    public SoulAdminResult loginDashboardUser(final String userName, final String password) {
+        DashboardUserVO dashboardUserVO = dashboardUserService.findByQuery(userName, password);
+        return SoulAdminResult.success("login dashboard user success", dashboardUserVO);
     }
 
     /**
      * query enums.
      *
-     * @return {@linkplain Mono}
+     * @return {@linkplain SoulAdminResult}
      */
     @GetMapping("/enum")
-    public Mono<SoulResult> queryEnums() {
-        return Mono.create(soulResult -> soulResult.success(SoulResult.success(enumService.list())));
+    public SoulAdminResult queryEnums() {
+        return SoulAdminResult.success(enumService.list());
     }
 }
