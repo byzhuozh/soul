@@ -23,19 +23,24 @@
  
  * soul-bootstrap : With the startup project, users can refer to
  
- * soul-common :  Framework common class
+ * soul-client : User fast access with springMvc,dubbo,springCloud
+  
+ * soul-common : Framework common class
+
+ * soul-metrics : metrics impl by prometheus.
  
- * soul-configuration : zookeeper configuration project
+ * soul-plugin : soul provider plugin collection.
+ 
+ * soul-spi : soul spi define.
  
  * soul-spring-boot-starter : Support for the spring boot starter
  
- * soul-web : Core processing packages include plug-ins, request routing and forwarding, and so on
- 
- * soul-client : User fast access, automatic new metadata, rule selector
- 
- * soul-extend-demo : Demo of the extension point
+ * soul-sync-data-center : provider zookeeper, http, websocket, nacos to sync data
  
  * soul-test : the rpc test project
+ 
+ * soul-web : Core processing packages include plug-ins, request routing and forwarding, and so on
+ 
 
 # Features
 
@@ -51,7 +56,6 @@
    
    * Support A/B test and grayscale publishing。
    
-
 # Plugin
 
  Whenever a request comes in ,Soul Execute all open plug-ins through the chain of responsibility.
@@ -64,7 +68,6 @@
  
  If you want to customize, see [plugin-extend](https://dromara.org/website/zh-cn/docs/soul/extend.html)
  
-
 # Selector & rule 
 
   According to your HTTP request headers, selectors and rules are used to route your requests.
@@ -75,8 +78,7 @@
   
   The selector and the rule match only once, and the match is returned. So the coarsest granularity should be sorted last.
    
-  
-# Data Caching  & Data Sync
+# Data Caching & Data Sync
  
   All data is cached ConcurrentHashMap in the JVM So it's very fast.
   
@@ -87,32 +89,6 @@
   ![Data Sync](https://bestkobe.gitee.io/images/soul/soul-config-processor.png?_t=201908032316)
   
   ![Sync Flow](https://bestkobe.gitee.io/images/soul/config-strage-processor.png?_t=201908032339)
- 
-# Quick Start
- * get `soul-admin.jar`
- 
-```
-> wget  https://yu199195.github.io/jar/soul-admin.jar
-```
-
-* start `soul-admin.jar`
-```java
-> java -jar soul-admin.jar --spring.datasource.url="jdbc:mysql://your ip:3306/soul?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=CONVERT_TO_NULL&failOverReadOnly=false&autoReconnect=true&useSSL=false"  
-  --spring.datasource.username="you username"  --spring.datasource.password="you password"
-```
-* visit : http://localhost:9095/index.html  username:admin  password :123456
-
-* get `soul-bootstrap.jar`
-
-```java
-> wget  https://yu199195.github.io/jar/soul-bootstrap.jar
-```
-
-*  start `soul-bootstrap.jar`  
-
-```xml
- java -jar soul-bootstrap.jar
-```
 
 # Prerequisite
  
@@ -120,13 +96,15 @@
    
    * Mysql
    
-# About & Document
+# About
   
    Soul Has been used in our production environment,Its performance and flexibility allow us to use up very cool.
    
    In double 11, we deployed 6 clusters, which supported a large volume of our business.
-   
-   If you want to use it, you can see [Document](https://dromara.org/website/zh-cn/docs/soul/soul.html)
+    
+# Document & Website
+   If you want to use it, you can see [Website](https://dromara.org/website/zh-cn/docs/soul/soul.html)
+   If you want to use it, you can see [Document](https://github.com/Dromara/soul/blob/master/doc/setup.md)
         
 # Stargazers over time
 
@@ -145,7 +123,6 @@
 # Known Users
 
 按照登记顺序排序，更多接入公司，欢迎在[https://github.com/Dromara/soul/issues/68](https://github.com/Dromara/soul/issues/68)登记（仅供开源用户参考）
-
 
 <table>
   <thead>
